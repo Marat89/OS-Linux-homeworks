@@ -10,39 +10,50 @@ parser.add_argument("-l", "--locate", default="file")
 args = parser.parse_args()
 
 
-
 def log_list_in_dir():
     search_result = run(f'ls {args.indir} | grep "\.log" ', shell=True,
                         stdout=PIPE)
+
     list_log_files = search_result.stdout.decode().split("\n")
-    print(type(list_log_files))
+
     return list_log_files
 
 
 def rewrite_files():
     list = log_list_in_dir()
-    for i in range (len(list) - 1):
+
+    for i in range(len(list) - 1):
         with open(f'{args.indir}/{list[i]}', "r") as file:
-            data = file.read().split("\n")
+            data = file.read()
+
         with open("result.txt", "a") as f:
             f.write(data)
 
 
-
-if args.locate == "file":
-    FILE = args.indir
-elif args.locate == "dir":
-    FILE = log_list_in_dir()
-
 def list_request():
-    with open(f'{args.indir}', "r") as f:
-        File = f.read()
+    if args.locate == "file":
+        with open(f'{args.indir}', "r") as f:
+            File = f.read()
 
-        list = File.split("\n")
+            list = File.split("\n")
+
+        return list
+    elif args.locate == "dir":
+        with open('result.txt', "r") as f:
+            File = f.read()
+
+            list = File.split("\n")
+
         return list
 
 
-LIST = list_request()
+if args.locate == "file":
+    FILE = args.indir
+    LIST = list_request()
+elif args.locate == "dir":
+    rewrite_files()
+    FILE = "result.txt"
+    LIST = list_request()
 
 
 def get_ip():
@@ -153,7 +164,4 @@ def create_json():
 
 
 if __name__ == '__main__':
-    # get_ip()
-    # lengthy_request()
-    # create_json()
     create_json()
